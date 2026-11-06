@@ -1,0 +1,31 @@
+# Directorios locales de Terraform (providers y módulos descargados)
+**/.terraform/
+
+# State: vive en el backend remoto (o local solo en bootstrap/) y puede contener secretos
+*.tfstate
+*.tfstate.*
+
+# Planes guardados: pueden contener secretos
+*.tfplan
+tfplan
+
+# Variables con valores reales o secretos. Se versionan solo los *.example
+*.tfvars
+*.tfvars.json
+
+# Configuración real del backend (se genera a partir de backend.hcl.example)
+backend.hcl
+
+# Logs y archivos de override locales
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Archivos de configuración del CLI
+.terraformrc
+terraform.rc
+
+# El lock de providers SÍ se versiona (.terraform.lock.hcl)

@@ -1,0 +1,7 @@
+# Copia este archivo a backend.hcl (ignorado por git) y reemplaza el nombre del
+# Storage Account con el output de bootstrap:
+#   terraform -chdir=bootstrap output -raw backend_hcl > backend.hcl
+resource_group_name  = "reservas-tfstate-rg"
+storage_account_name = "streservastfXXXXXX"
+container_name       = "tfstate"
+key                  = "reservas.tfstate"
