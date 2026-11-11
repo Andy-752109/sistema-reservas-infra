@@ -44,10 +44,12 @@ resource "azurerm_linux_web_app" "api" {
     NODE_ENV                            = "production"
     AMBIENTE                            = each.value
     # El issue #43 la reemplaza por la cadena del PostgreSQL Flexible Server.
-    DATABASE_URL      = ""
-    JWT_SECRET        = random_password.jwt_secret[each.key].result
-    JWT_EXPIRES_IN    = "1h"
-    CORS_ORIGINS      = local.url_web[each.key]
+    DATABASE_URL   = ""
+    JWT_SECRET     = random_password.jwt_secret[each.key].result
+    JWT_EXPIRES_IN = "1h"
+    # El web de su ambiente y la propia API: Swagger UI manda Origin en los POST
+    # aunque sea el mismo sitio, y sin su URL el "Try it out" recibe 403.
+    CORS_ORIGINS      = "${local.url_web[each.key]},${local.url_api[each.key]}"
     OTEL_SERVICE_NAME = "api-${each.key}"
     # El pipeline de CD (#50) la actualiza con el SHA desplegado.
     COMMIT_SHA = "pendiente"
