@@ -20,3 +20,8 @@ variable "tags" {
     gestionado = "terraform"
   }
 }
+
+variable "dockerhub_usuario" {
+  description = "Usuario u organización de Docker Hub donde se publican las imágenes reservas-api y reservas-web."
+  type        = string
+}
