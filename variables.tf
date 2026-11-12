@@ -11,6 +11,13 @@ variable "location" {
   default = "westus3"
 }
 
+variable "postgres_location" {
+  description = "Región del PostgreSQL Flexible Server."
+  type        = string
+  # West US 3 rechaza B1ms con SkuNotAvailable para esta suscripción; Central US sí lo tiene.
+  default = "centralus"
+}
+
 variable "resource_group_location" {
   description = "Región del Resource Group. Solo guarda metadatos; cambiarla obliga a recrear el grupo."
   type        = string

@@ -29,10 +29,10 @@ Este repo se separó de la carpeta `infra/` del repo de la API conservando su hi
 
 | Recurso | Configuración |
 |---|---|
-| Resource Group `reservas-rg` | Metadatos en `centralus`; los recursos viven en `westus3` |
+| Resource Group `reservas-rg` | Metadatos en `centralus`; App Service y APM en `westus3`, PostgreSQL en `centralus` |
 | App Service Plan `reservas-plan` | Linux **B1** (1 vCPU, 1.75 GB), compartido por las 4 Web Apps. De aquí salen las métricas de CPU y memoria |
 | Web Apps `reservas-{api,web}-{dev,prod}-<sufijo>` | Contenedor de Docker Hub, HTTPS obligatorio, TLS 1.2, FTPS apagado, Always On. La API tiene health check en `/health` |
-| PostgreSQL Flexible Server | Versión 16, **B1ms**, 32 GB, respaldos de 7 días. Bases `reservas_dev` y `reservas_prod`. Conexión con `sslmode=require` |
+| PostgreSQL Flexible Server (`centralus`) | Versión 16, **B1ms**, 32 GB, respaldos de 7 días. Bases `reservas_dev` y `reservas_prod`. Conexión con `sslmode=require` |
 | Log Analytics | 30 días de retención, tope de 1 GB al día |
 | Application Insights | Uno por ambiente, basado en el workspace. La API distingue el ambiente con `OTEL_SERVICE_NAME` (`api-dev`, `api-prod`) |
 
@@ -50,7 +50,8 @@ El proyecto es académico: un solo usuario a la vez y sin tráfico real. Se elig
 | **Regla de firewall `0.0.0.0`** | Es la regla especial de Azure que permite servicios de Azure. Permite conexiones desde **cualquier** servicio de Azure, no solo las nuestras; la contraseña y TLS siguen siendo obligatorios | Red privada (VNet integration + private endpoint) |
 | **Recursos en West US 3** | La suscripción tenía cuota 0 de App Service B1 en Central US, incluso como pay-as-you-go; en West US 3 sí hay. Además está más cerca de Guadalajara | — |
 | **Resource Group en Central US** | Su región solo guarda metadatos; cambiarla obliga a recrear el grupo, y Azure lo bloquea porque contiene un recurso que crea solo (Application Insights Smart Detection) | — |
-| **Nombres con la región** (`reservas-pg-westus3-…`) | Azure no deja reutilizar en el mismo grupo un nombre que existió en otra región, aunque ya esté borrado | — |
+| **PostgreSQL en Central US** | West US 3 rechazó B1ms con `SkuNotAvailable` (falta de capacidad para la suscripción), aunque la consulta de SKUs lo mostraba disponible. En Central US sí se crea. La API consulta la base desde otra región: unos 35 ms más por consulta, imperceptible para un usuario | Base y API en la misma región |
+| **Nombres con la región** (`reservas-pg-centralus-…`) | Azure no deja reutilizar en el mismo grupo un nombre que existió en otra región, aunque ya esté borrado | — |
 | **Tope de 1 GB al día en Log Analytics** | Un error en bucle no puede consumir el crédito | Tope según el volumen esperado |
 
 ## State remoto
@@ -114,6 +115,7 @@ cp terraform.tfvars.example terraform.tfvars   # ignorado por git
 | `dockerhub_usuario` | *(obligatoria)* | Usuario de Docker Hub de las imágenes `reservas-api` y `reservas-web` |
 | `prefijo` | `reservas` | Prefijo de todos los nombres |
 | `location` | `westus3` | Región de los recursos |
+| `postgres_location` | `centralus` | Región de PostgreSQL |
 | `resource_group_location` | `centralus` | Región del Resource Group |
 | `app_service_sku` | `B1` | SKU del App Service Plan |
 | `postgres_sku` | `B_Standard_B1ms` | SKU de PostgreSQL |
