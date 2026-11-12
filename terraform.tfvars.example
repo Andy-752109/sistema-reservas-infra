@@ -10,6 +10,7 @@ dockerhub_usuario = "andreaarv"
 # Los valores por defecto son los que usa el proyecto. Cámbialos solo si es necesario.
 # prefijo                 = "reservas"
 # location                = "westus3"
+# postgres_location       = "centralus"
 # resource_group_location = "centralus"
 # app_service_sku         = "B1"
 # postgres_sku            = "B_Standard_B1ms"
