@@ -9,8 +9,9 @@ resource "random_password" "postgres" {
 }
 
 resource "azurerm_postgresql_flexible_server" "main" {
-  # El nombre es global en *.postgres.database.azure.com.
-  name                = "${local.prefijo}-pg-${random_string.sufijo.result}"
+  # El nombre es global en *.postgres.database.azure.com. Lleva la región porque
+  # Azure no deja reutilizar un nombre del grupo que ya existió en otra región.
+  name                = "${local.prefijo}-pg-${var.location}-${random_string.sufijo.result}"
   resource_group_name = azurerm_resource_group.main.name
   location            = var.location
 
