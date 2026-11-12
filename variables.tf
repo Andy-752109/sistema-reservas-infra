@@ -7,7 +7,14 @@ variable "subscription_id" {
 }
 
 variable "location" {
-  description = "Región de Azure de los recursos del proyecto."
+  description = "Región de Azure de los recursos del proyecto (App Service, PostgreSQL y APM)."
+  type        = string
+  # West US 3: la suscripción no tiene cuota de App Service B1 en Central US.
+  default = "westus3"
+}
+
+variable "resource_group_location" {
+  description = "Región del Resource Group. Solo guarda metadatos; cambiarla obliga a recrear el grupo."
   type        = string
   default     = "centralus"
 }

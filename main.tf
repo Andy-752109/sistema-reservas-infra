@@ -26,6 +26,6 @@ resource "random_string" "sufijo" {
 
 resource "azurerm_resource_group" "main" {
   name     = "${local.prefijo}-rg"
-  location = var.location
+  location = var.resource_group_location
   tags     = var.tags
 }

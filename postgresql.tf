@@ -12,7 +12,7 @@ resource "azurerm_postgresql_flexible_server" "main" {
   # El nombre es global en *.postgres.database.azure.com.
   name                = "${local.prefijo}-pg-${random_string.sufijo.result}"
   resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  location            = var.location
 
   version    = "16"
   sku_name   = "B_Standard_B1ms"
