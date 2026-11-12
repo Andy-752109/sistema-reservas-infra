@@ -43,8 +43,8 @@ resource "azurerm_linux_web_app" "api" {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
     NODE_ENV                            = "production"
     AMBIENTE                            = each.value
-    # El issue #43 la reemplaza por la cadena del PostgreSQL Flexible Server.
-    DATABASE_URL   = ""
+    # Base del ambiente en el PostgreSQL Flexible Server, con TLS (postgresql.tf).
+    DATABASE_URL   = local.database_url[each.key]
     JWT_SECRET     = random_password.jwt_secret[each.key].result
     JWT_EXPIRES_IN = "1h"
     # El web de su ambiente y la propia API: Swagger UI manda Origin en los POST
