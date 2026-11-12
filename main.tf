@@ -1,6 +1,5 @@
 locals {
-  # El issue #45 convierte el prefijo y los SKUs en variables.
-  prefijo = "reservas"
+  prefijo = var.prefijo
 
   # Etiqueta corta de cada ambiente → valor que ve el usuario en el footer del web.
   ambientes = {

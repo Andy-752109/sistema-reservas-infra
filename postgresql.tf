@@ -15,9 +15,9 @@ resource "azurerm_postgresql_flexible_server" "main" {
   resource_group_name = azurerm_resource_group.main.name
   location            = var.location
 
-  version    = "16"
-  sku_name   = "B_Standard_B1ms"
-  storage_mb = 32768
+  version    = var.postgres_version
+  sku_name   = var.postgres_sku
+  storage_mb = var.postgres_storage_mb
 
   administrator_login    = "reservasadmin"
   administrator_password = random_password.postgres.result
