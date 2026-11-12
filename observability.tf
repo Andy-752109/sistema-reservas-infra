@@ -1,8 +1,10 @@
 # APM: un workspace de Log Analytics compartido y un Application Insights por
 # ambiente, para que en el portal Dev y Prod se vean por separado. La API además
 # distingue el ambiente con OTEL_SERVICE_NAME (api-dev / api-prod).
+# Los nombres llevan la región: Azure no deja reutilizar en el mismo grupo un nombre
+# que ya existió en otra región (pasó al mover de centralus a westus3).
 resource "azurerm_log_analytics_workspace" "main" {
-  name                = "${local.prefijo}-logs"
+  name                = "${local.prefijo}-logs-${var.location}"
   resource_group_name = azurerm_resource_group.main.name
   location            = var.location
   sku                 = "PerGB2018"
@@ -15,7 +17,7 @@ resource "azurerm_log_analytics_workspace" "main" {
 resource "azurerm_application_insights" "ambiente" {
   for_each = local.ambientes
 
-  name                = "${local.prefijo}-appi-${each.key}"
+  name                = "${local.prefijo}-appi-${each.key}-${var.location}"
   resource_group_name = azurerm_resource_group.main.name
   location            = var.location
   workspace_id        = azurerm_log_analytics_workspace.main.id
