@@ -13,9 +13,9 @@ Closes Andy-752109/sistema-reservas-api#
 
 ## ¿Cómo se probó?
 
-- [ ] `npm test` pasa en local
-- [ ] `npm run build` compila sin errores
-- [ ] Probado manualmente (Swagger / Postman / web)
+- [ ] `terraform fmt -check -recursive` sin cambios
+- [ ] `terraform validate` sin errores
+- [ ] `terraform plan` revisado: pega el resumen (`Plan: X to add, Y to change, Z to destroy`) y explica lo que se destruye o se recrea
 
 ## Definición de terminado
 

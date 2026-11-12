@@ -1,0 +1,17 @@
+# Copia este archivo a terraform.tfvars (ignorado por git) y ajusta los valores.
+# Terraform lo lee solo en plan y apply.
+
+# Obligatoria: usuario u organización de Docker Hub de las imágenes.
+dockerhub_usuario = "andreaarv"
+
+# Opcional: si se omite, se usa la variable de entorno ARM_SUBSCRIPTION_ID.
+# subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# Los valores por defecto son los que usa el proyecto. Cámbialos solo si es necesario.
+# prefijo                 = "reservas"
+# location                = "westus3"
+# resource_group_location = "centralus"
+# app_service_sku         = "B1"
+# postgres_sku            = "B_Standard_B1ms"
+# postgres_version        = "16"
+# postgres_storage_mb     = 32768
