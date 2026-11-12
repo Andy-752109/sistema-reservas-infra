@@ -3,7 +3,7 @@
 resource "azurerm_service_plan" "main" {
   name                = "${local.prefijo}-plan"
   resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  location            = var.location
   os_type             = "Linux"
   sku_name            = "B1"
   tags                = var.tags
@@ -21,7 +21,7 @@ resource "azurerm_linux_web_app" "api" {
 
   name                = local.nombre_api[each.key]
   resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  location            = var.location
   service_plan_id     = azurerm_service_plan.main.id
   https_only          = true
 
@@ -73,7 +73,7 @@ resource "azurerm_linux_web_app" "web" {
 
   name                = local.nombre_web[each.key]
   resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  location            = var.location
   service_plan_id     = azurerm_service_plan.main.id
   https_only          = true
 

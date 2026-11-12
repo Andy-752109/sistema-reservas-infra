@@ -4,7 +4,7 @@
 resource "azurerm_log_analytics_workspace" "main" {
   name                = "${local.prefijo}-logs"
   resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  location            = var.location
   sku                 = "PerGB2018"
   retention_in_days   = 30
   # Tope diario de ingesta para que un error en bucle no consuma el crédito.
@@ -17,7 +17,7 @@ resource "azurerm_application_insights" "ambiente" {
 
   name                = "${local.prefijo}-appi-${each.key}"
   resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  location            = var.location
   workspace_id        = azurerm_log_analytics_workspace.main.id
   application_type    = "Node.JS"
   tags                = var.tags
