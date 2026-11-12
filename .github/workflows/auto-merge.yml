@@ -1,0 +1,32 @@
+# Activa el auto-merge en todo PR hacia develop: se fusiona solo en cuanto
+# tenga la aprobación obligatoria (y, cuando exista el CI, los checks en verde).
+# Los PR hacia main (liberaciones) no se tocan: se fusionan a mano.
+#
+# pull_request_target usa el workflow de develop, así que también aplica a PR
+# cuyas ramas no lo tienen (p. ej. las encadenadas). No hace checkout del
+# código del PR, solo llama a la API de GitHub.
+name: Auto-merge
+
+on:
+  pull_request_target:
+    types: [opened, reopened, ready_for_review, edited]
+    branches: [develop]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  activar:
+    # En "edited" solo interesa cuando cambió la base (PR encadenado que pasa a develop).
+    if: >-
+      !github.event.pull_request.draft &&
+      (github.event.action != 'edited' || github.event.changes.base != null)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Activar auto-merge
+        run: gh pr merge "$PR" --auto --merge --repo "$REPO"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
