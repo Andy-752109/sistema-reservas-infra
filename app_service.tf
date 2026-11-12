@@ -51,6 +51,8 @@ resource "azurerm_linux_web_app" "api" {
     # aunque sea el mismo sitio, y sin su URL el "Try it out" recibe 403.
     CORS_ORIGINS      = "${local.url_web[each.key]},${local.url_api[each.key]}"
     OTEL_SERVICE_NAME = "api-${each.key}"
+    # Activa la telemetría de la API y la manda al Application Insights de su ambiente.
+    APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.ambiente[each.key].connection_string
     # El pipeline de CD (#50) la actualiza con el SHA desplegado.
     COMMIT_SHA = "pendiente"
   }
