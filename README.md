@@ -144,7 +144,27 @@ terraform output                # URLs de las 4 Web Apps y nombres para los pipe
 
 Las Web Apps arrancan con la imagen `latest`. Los pipelines de CD cambian la imagen al tag del SHA en cada despliegue; Terraform ignora ese cambio (`ignore_changes`) para no regresar la app a `latest` en el siguiente `apply`.
 
-## 5. Después de la entrega
+## 5. Administrador inicial (una vez por ambiente)
+
+Las bases de Dev y Prod arrancan vacías: las migraciones crean las tablas al iniciar la API, pero no hay ningún usuario. `scripts/seed-admin.sh` ejecuta el seed del repo de la API (`prisma/seed.ts`) contra la base de un ambiente para crear el administrador y los 6 espacios de ejemplo.
+
+```bash
+# 1. Copia la contraseña del admin al portapapeles (mínimo 12 caracteres; distinta en Prod)
+# 2. Ejecuta, desde la raíz de este repo:
+bash scripts/seed-admin.sh dev admin@ejemplo.com
+bash scripts/seed-admin.sh prod admin@ejemplo.com
+```
+
+| Paso | Por qué |
+|---|---|
+| Lee la contraseña del portapapeles y la borra al final | No queda en el historial de la terminal ni en pantalla |
+| Toma `DATABASE_URL` de la Web App del ambiente | La contraseña de PostgreSQL solo vive en el state y en la Web App |
+| Abre el firewall de PostgreSQL solo para tu IP y lo cierra al terminar, aunque falle | La base no queda expuesta; la regla temporal no la gestiona Terraform |
+| Comprueba el login del admin en la API | Confirma que el admin quedó en la base que usa la API |
+
+El seed es idempotente: volver a ejecutarlo no modifica al admin ni a los espacios existentes. Requiere macOS (`pbpaste`), `az login`, `terraform init`, `jq` y el repo de la API clonado junto a este (o `API_REPO=/ruta/al/repo`) con `npm ci`.
+
+## 6. Después de la entrega
 
 Para dejar de generar costos:
 
