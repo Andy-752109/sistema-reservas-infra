@@ -35,6 +35,7 @@ Este repo se separó de la carpeta `infra/` del repo de la API conservando su hi
 | PostgreSQL Flexible Server (`centralus`) | Versión 16, **B1ms**, 32 GB, respaldos de 7 días. Bases `reservas_dev` y `reservas_prod`. Conexión con `sslmode=require` |
 | Log Analytics | 30 días de retención, tope de 1 GB al día |
 | Application Insights | Uno por ambiente, basado en el workspace. La API distingue el ambiente con `OTEL_SERVICE_NAME` (`api-dev`, `api-prod`) |
+| Dashboard `reservas-dashboard` | Compartido en el portal: CPU y memoria del plan; requests, errores 5xx y tiempo de respuesta de la API en Dev y Prod (`dashboard.tf`) |
 
 Terraform genera y entrega como *app settings* la contraseña de PostgreSQL (`DATABASE_URL`), un `JWT_SECRET` por ambiente y la cadena de Application Insights. Ningún secreto está escrito en el repo.
 
@@ -53,6 +54,19 @@ El proyecto es académico: un solo usuario a la vez y sin tráfico real. Se elig
 | **PostgreSQL en Central US** | West US 3 rechazó B1ms con `SkuNotAvailable` (falta de capacidad para la suscripción), aunque la consulta de SKUs lo mostraba disponible. En Central US sí se crea. La API consulta la base desde otra región: unos 35 ms más por consulta, imperceptible para un usuario | Base y API en la misma región |
 | **Nombres con la región** (`reservas-pg-centralus-…`) | Azure no deja reutilizar en el mismo grupo un nombre que existió en otra región, aunque ya esté borrado | — |
 | **Tope de 1 GB al día en Log Analytics** | Un error en bucle no puede consumir el crédito | Tope según el volumen esperado |
+
+## Dashboard de métricas
+
+`dashboard.tf` crea el dashboard compartido **Sistema de Reservas · Métricas** (`terraform output dashboard` da el enlace). Muestra las últimas 24 horas:
+
+![CPU y memoria del plan; requests y errores 5xx de la API](docs/dashboard-plan-y-api.png)
+
+![Tiempo de respuesta de la API en Dev y Prod](docs/dashboard-tiempo-respuesta.png)
+
+- **CPU** ronda el 15–20 % y la **memoria** el 78 %: son 4 contenedores en un B1 de 1.75 GB. Es lo primero que habría que escalar si crece la carga.
+- Los **requests** son sobre todo los health checks de App Service y los smoke tests del CD; los picos coinciden con los despliegues.
+- **Errores 5xx: 0** en Dev y Prod.
+- El pico de **tiempo de respuesta** (~25 s) es el arranque en frío del contenedor durante la primera liberación del CD; por eso el smoke test espera hasta 10 minutos.
 
 ## State remoto
 
@@ -140,6 +154,7 @@ terraform output                # URLs de las 4 Web Apps y nombres para los pipe
 | `nombre_web_app_api`, `nombre_web_app_web` | Nombres que usan los pipelines de CD en `azure/webapps-deploy` |
 | `postgres_servidor` | Host de PostgreSQL |
 | `application_insights` | Recurso de APM por ambiente |
+| `dashboard` | Enlace al dashboard de métricas en el portal |
 | `resource_group` | Resource Group del proyecto |
 
 Las Web Apps arrancan con la imagen `latest`. Los pipelines de CD cambian la imagen al tag del SHA en cada despliegue; Terraform ignora ese cambio (`ignore_changes`) para no regresar la app a `latest` en el siguiente `apply`.

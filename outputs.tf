@@ -33,3 +33,8 @@ output "application_insights" {
   description = "Recurso de Application Insights por ambiente, para buscarlo en el portal."
   value       = { for amb, ai in azurerm_application_insights.ambiente : amb => ai.name }
 }
+
+output "dashboard" {
+  description = "Enlace al dashboard de métricas en el portal de Azure."
+  value       = "https://portal.azure.com/#@/dashboard/arm${azurerm_portal_dashboard.main.id}"
+}
