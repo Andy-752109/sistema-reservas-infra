@@ -1,0 +1,44 @@
+# Valida el código de Terraform en cada PR hacia develop o main y en cada push a main.
+# No necesita credenciales de Azure: inicializa sin backend y solo revisa formato
+# y sintaxis. El plan y el apply contra Azure se ejecutan desde la terminal de DevOps.
+name: Terraform
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: terraform-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    name: Formato y validación
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: 1.17.2
+
+      - name: Formato
+        run: terraform fmt -check -recursive
+
+      - name: Validar recursos del proyecto
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+
+      - name: Validar bootstrap del state
+        working-directory: bootstrap
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
